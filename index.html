@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini 认证</title>
+    <style>
+        /* --- 1. 全局设置 --- */
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0a0a0a; /* 深色背景 */
+            color: #ffffff;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- 2. 布局容器 --- */
+        .page-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        /* --- 3. 背景光效 (保留你喜欢的十字星效果) --- */
+        .bg-glow {
+            position: absolute;
+            top: 50%;
+            right: -5%; /* 调整到右侧 */
+            transform: translateY(-50%);
+            width: 800px;
+            height: 800px;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(60, 60, 70, 0.5) 0%, rgba(13, 13, 15, 0) 70%);
+        }
+
+        /* 制作十字星形状 */
+        .bg-glow::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(60, 60, 65, 0.8) 0%, rgba(13, 13, 15, 0) 60%);
+            clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
+            filter: blur(50px);
+        }
+
+        /* --- 4. 内容区域 (左右布局) --- */
+        .content-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1100px;
+            gap: 80px; /* 拉开左右间距 */
+            z-index: 1;
+        }
+
+        /* 左侧文字区 */
+        .left-panel {
+            flex: 1;
+            max-width: 550px;
+        }
+
+        .title {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin: 0 0 30px 0;
+            letter-spacing: -2px;
+            background: linear-gradient(to bottom right, #ffffff, #888888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .description {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #9aa0a6;
+        }
+
+        .description p {
+            margin-bottom: 16px;
+        }
+
+        .description a {
+            color: #8ab4f8;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(138, 180, 248, 0.3);
+            transition: all 0.2s;
+        }
+
+        .description a:hover {
+            color: #d2e3fc;
+            border-bottom-color: #d2e3fc;
+        }
+
+        /* 右侧卡片区 */
+        .right-panel {
+            flex: 0 0 auto;
+        }
+
+        .auth-card {
+            width: 380px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.03); /* 极淡的背景 */
+            backdrop-filter: blur(24px); /* 强力磨砂玻璃 */
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: #9aa0a6;
+            font-weight: 500;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #1a1a1c;
+            border: 1px solid #3c4043;
+            border-radius: 12px;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: #8ab4f8;
+            background-color: #202124;
+            box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.2);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff;
+            /* 漂亮的紫色渐变 */
+            background: linear-gradient(135deg, #7b61ff 0%, #aa75ff 100%);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(123, 97, 255, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 提示消息 */
+        #toast {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            min-height: 1.5em;
+            transition: color 0.3s;
+        }
+
+        /* 顶部语言切换 */
+        .top-nav {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            font-size: 0.9rem;
+            color: #9aa0a6;
+            z-index: 10;
+        }
+        .lang-switch span {
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        .lang-switch .active {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        /* --- 5. 手机端适配 --- */
+        @media (max-width: 900px) {
+            .content-wrapper {
+                flex-direction: column;
+                text-align: center;
+                gap: 50px;
+            }
+            .title {
+                font-size: 3rem;
+            }
+            .left-panel {
+                max-width: 100%;
+            }
+            .auth-card {
+                width: 100%;
+                max-width: 340px;
+            }
+            .bg-glow {
+                right: 50%;
+                transform: translate(50%, -50%);
+                opacity: 0.6;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div class="top-nav">
+        <div class="lang-switch">
+            <span class="active">中文</span>
+            <span>EN</span>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <div class="content-wrapper">
+            
+            <div class="left-panel">
+                <h1 class="title">Gemini<br>认证</h1>
+                <div class="description">
+                    <p>使用 SheerID 链接与卡密，自动完成 Gemini 学生资格验证。</p>
+                    <p>如果过不了，使用美国 IP 打开 <a href="#">Google Pay</a> 重新获取新的链接。</p>
+                    <p>如果一直遇到错误，请尝试：切换 IP 重新获取认证链接或使用无痕浏览。</p>
+                    <p>认证通过后去 <a href="#">card.afdian.org</a> 凭卡密领取激活卡，激活卡 1 小时内有效！</p>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="auth-card">
+                    <div class="input-group">
+                        <label class="input-label">请输入认证码</label>
+                        <input type="text" class="input-field" id="code-input" placeholder="例如: GEMINI-2024">
+                    </div>
+                    <button class="submit-btn" id="verify-btn">验证认证码</button>
+                    <div id="toast"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('verify-btn');
+        const input = document.getElementById('code-input');
+        const toast = document.getElementById('toast');
+
+        // --- 设置你的密码 ---
+        const CORRECT_CODE = "123456"; 
+
+        btn.addEventListener('click', function() {
+            const userCode = input.value.trim();
+
+            if (!userCode) {
+                showToast("请输入认证码", "#ff4444");
+                return;
+            }
+
+            // 按钮变为加载状态
+            const originalText = btn.innerText;
+            btn.innerText = "正在验证...";
+            btn.disabled = true;
+
+            // 模拟 1.5 秒延迟
+            setTimeout(() => {
+                if (userCode === CORRECT_CODE) {
+                    showToast("认证成功！正在跳转...", "#00C851");
+                    // 2秒后跳转
+                    setTimeout(() => {
+                        window.location.href = "https://www.google.com"; 
+                    }, 2000);
+                } else {
+                    showToast("认证码无效或已过期", "#ff4444");
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
+            }, 1500);
+        });
+
+        function showToast(msg, color) {
+            toast.style.color = color;
+            toast.innerText = msg;
+        }
+    </script>
+</body>
+</html>
