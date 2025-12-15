@@ -13,26 +13,53 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 核心逻辑：尝试找到一个 'valid' 的卡密，并立即将其改为 'used'
-    // RETURNING * 表示如果更新成功，返回被更新的那一行数据
-    const { rows } = await sql`
+    // --- 第一步：先查询卡密的状态 ---
+    const { rows } = await sql`SELECT * FROM cdkeys WHERE key = ${cdk_key} LIMIT 1;`;
+
+    // 情况 A：数据库里根本没这一行
+    if (rows.length === 0) {
+      return res.status(200).json({ 
+        success: false, 
+        message: '认证失败：卡密不存在，请检查输入' 
+      });
+    }
+
+    const card = rows[0];
+
+    // 情况 B：卡密存在，但状态已经是 'used'
+    if (card.status === 'used') {
+      // 处理时间格式：将 UTC 时间转为可读格式 (例如：2024/5/20 12:30:00)
+      // 如果数据库里的 used_at 是空的，就显示"未知时间"
+      let timeStr = '未知时间';
+      if (card.used_at) {
+        // 这里简单地转为本地时间字符串
+        timeStr = new Date(card.used_at).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
+      }
+
+      return res.status(200).json({ 
+        success: false, 
+        message: `认证失败：此卡密已于 [${timeStr}] 被使用` 
+      });
+    }
+
+    // --- 第二步：尝试更新 (原子操作防止并发) ---
+    // 只有当 status = 'valid' 时才更新
+    const updateResult = await sql`
       UPDATE cdkeys 
       SET status = 'used', used_at = NOW() 
       WHERE key = ${cdk_key} AND status = 'valid'
       RETURNING *;
     `;
 
-    // 如果 rows 长度为 0，说明：
-    // 1. 卡密不存在
-    // 2. 或者卡密存在但状态不是 valid (已经被用了)
-    if (rows.length === 0) {
+    // 再次确认：如果更新行数为0，说明刚才那一瞬间被别人抢先用了
+    if (updateResult.rows.length === 0) {
       return res.status(200).json({ 
         success: false, 
-        message: '认证失败：卡密无效或已被使用' 
+        message: '认证失败：卡密刚刚已被使用' 
       });
     }
 
-    // 如果 rows 有数据，说明更新成功（认证成功）
+    // --- 第三步：成功 ---
     return res.status(200).json({ 
         success: true, 
         message: '认证成功！权益已激活。' 
@@ -40,6 +67,6 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('DB Error:', error);
-    return res.status(500).json({ success: false, message: '服务器内部错误' });
+    return res.status(500).json({ success: false, message: '服务器内部错误，请稍后重试' });
   }
 }
