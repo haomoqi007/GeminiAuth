@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,10 +12,9 @@
             --accent: #8ab4f8;
             --btn-grad: linear-gradient(135deg, #7b61ff 0%, #aa75ff 100%);
         }
-
         body {
             margin: 0;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-color);
             color: #fff;
             height: 100vh;
@@ -25,7 +23,7 @@
             overflow: hidden;
         }
 
-        /* 页眉 */
+        /* --- 页眉设计 --- */
         header {
             padding: 20px 40px;
             display: flex;
@@ -34,18 +32,42 @@
             z-index: 10;
         }
 
-        .logo {
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            cursor: pointer;
+            /* 初始状态隐藏，防止闪烁 */
+            opacity: 0; 
+            transition: opacity 0.3s ease; 
+        }
+
+        .logo-img {
+            height: 36px;
+            width: auto;
+            border-radius: 6px;
+            display: none; /* 默认不显示，直到JS获取到地址 */
+        }
+
+        .brand-text {
             font-weight: 800;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             letter-spacing: -0.5px;
+            color: #fff;
+            background: linear-gradient(to right, #fff, #ccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .lang {
-            font-size: 0.9rem;
-            color: #888;
+        .lang { 
+            font-size: 0.9rem; 
+            color: #666; 
+            font-weight: 500;
+            cursor: pointer;
         }
-
-        /* 主体 */
+        
+        /* --- 主体内容 --- */
         main {
             flex: 1;
             display: flex;
@@ -55,163 +77,94 @@
             padding: 20px;
         }
 
-        /* 背景光效 */
         .glow {
             position: absolute;
-            top: 50%;
-            right: -10%;
+            top: 50%; right: -10%;
             transform: translateY(-50%);
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(100, 100, 255, 0.15), transparent 70%);
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(100,100,255,0.12), transparent 70%);
             pointer-events: none;
             z-index: 0;
         }
-
+        
         .container {
             display: flex;
             max-width: 1000px;
             width: 100%;
-            gap: 60px;
+            gap: 80px;
             z-index: 1;
+            align-items: center;
         }
-
-        .left-text {
-            flex: 1;
-            padding-top: 20px;
+        
+        .left-text { flex: 1; }
+        h1 { 
+            font-size: 4.5rem; 
+            line-height: 1.1; 
+            margin: 0 0 24px 0; 
+            background: linear-gradient(to bottom right, #ffffff, #999999); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            letter-spacing: -2px;
         }
+        .desc { color: #9aa0a6; line-height: 1.7; font-size: 1rem; }
+        .desc p { margin-bottom: 12px; }
+        .desc a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(138,180,248,0.3); }
+        .desc a:hover { border-bottom-color: var(--accent); opacity: 0.8; }
 
-        h1 {
-            font-size: 4rem;
-            line-height: 1;
-            margin: 0 0 20px 0;
-            background: linear-gradient(to right, #fff, #999);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .desc {
-            color: #888;
-            line-height: 1.6;
-            font-size: 0.95rem;
-        }
-
-        .desc p {
-            margin-bottom: 10px;
-        }
-
-        .desc a {
-            color: var(--accent);
-            text-decoration: none;
-            border-bottom: 1px solid rgba(138, 180, 248, 0.3);
-        }
-
-        .right-card {
-            flex: 0 0 400px;
-        }
-
+        .right-card { flex: 0 0 400px; }
         .auth-box {
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.08);
             padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-
-        .input-label {
-            display: block;
-            color: #888;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-        }
-
+        .input-label { display: block; color: #9aa0a6; margin-bottom: 12px; font-size: 0.9rem; font-weight: 500; }
         .input-field {
-            width: 100%;
-            box-sizing: border-box;
+            width: 100%; box-sizing: border-box;
             padding: 16px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0,0,0,0.4);
             border: 1px solid #333;
-            border-radius: 10px;
+            border-radius: 12px;
             color: #fff;
             font-size: 1rem;
             outline: none;
             transition: 0.3s;
         }
-
-        .input-field:focus {
-            border-color: var(--accent);
-        }
-
+        .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.2); }
         .btn {
-            width: 100%;
-            margin-top: 20px;
+            width: 100%; margin-top: 24px;
             padding: 16px;
-            border: none;
-            border-radius: 10px;
+            border: none; border-radius: 12px;
             background: var(--btn-grad);
-            color: #fff;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.2s;
+            color: #fff; font-weight: 600; font-size: 1.05rem;
+            cursor: pointer; transition: 0.2s;
         }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(123,97,255,0.4); }
+        .btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(123, 97, 255, 0.3);
-        }
+        #msg { margin-top: 15px; text-align: center; font-size: 0.9rem; min-height: 20px; }
+        footer { text-align: center; padding: 20px; color: #444; font-size: 0.8rem; }
 
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: wait;
-            transform: none;
-        }
-
-        #msg {
-            margin-top: 15px;
-            text-align: center;
-            font-size: 0.9rem;
-            min-height: 20px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: #444;
-            font-size: 0.8rem;
-        }
-
-        /* 手机适配 */
-        @media (max-width: 800px) {
-            .container {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            h1 {
-                font-size: 3rem;
-            }
-
-            .right-card {
-                flex: 1;
-                width: 100%;
-                max-width: 100%;
-            }
-
-            .glow {
-                top: 20%;
-                right: 50%;
-                transform: translateX(50%);
-            }
+        @media (max-width: 900px) {
+            header { padding: 15px 20px; }
+            .container { flex-direction: column; text-align: center; gap: 40px; }
+            .brand-container { justify-content: flex-start; }
+            h1 { font-size: 3rem; }
+            .right-card { flex: 1; width: 100%; max-width: 360px; }
+            .left-text { padding: 0 20px; }
+            .glow { top: 20%; right: 50%; transform: translateX(50%); width: 100%; opacity: 0.5; }
         }
     </style>
 </head>
-
 <body>
 
     <header>
-        <div class="logo">七猴认证</div>
+        <a href="#" class="brand-container" id="brandContainer">
+            <img src="" alt="Logo" class="logo-img" id="dynamicLogo">
+            <span class="brand-text">七猴认证</span>
+        </a>
         <div class="lang">中文 / EN</div>
     </header>
 
@@ -227,7 +180,7 @@
                     <p>访问 <a href="#">官网文档</a> 获取更多帮助。</p>
                 </div>
             </div>
-
+            
             <div class="right-card">
                 <div class="auth-box">
                     <label class="input-label">请输入认证密钥</label>
@@ -242,35 +195,62 @@
     <footer>© 2025 七猴认证 All Rights Reserved</footer>
 
     <script>
+        // --- 1. 动态加载 Logo 逻辑 ---
+        async function loadConfig() {
+            try {
+                // 请求后端接口获取 Logo 地址
+                const res = await fetch('/api/config');
+                const data = await res.json();
+                
+                const logoImg = document.getElementById('dynamicLogo');
+                const brandContainer = document.getElementById('brandContainer');
+
+                if (data.logo_url) {
+                    logoImg.src = data.logo_url;
+                    logoImg.style.display = 'block'; // 有图片才显示
+                }
+                
+                // 显示整个 Logo 区域 (淡入效果)
+                brandContainer.style.opacity = '1';
+
+            } catch (error) {
+                console.error("加载配置失败:", error);
+                // 失败时也把文字显示出来，避免页面空白
+                document.getElementById('brandContainer').style.opacity = '1';
+            }
+        }
+
+        // 页面加载时立即执行
+        loadConfig();
+
+
+        // --- 2. 验证卡密逻辑 (保持不变) ---
         const btn = document.getElementById('submitBtn');
         const input = document.getElementById('code');
         const msg = document.getElementById('msg');
 
         btn.addEventListener('click', async () => {
             const code = input.value.trim();
-            if (!code) {
-                showMsg('请输入密钥', 'red');
+            if(!code) {
+                showMsg('请输入密钥', '#ff4444');
                 return;
             }
 
-            // 锁定按钮
             btn.disabled = true;
             btn.innerText = "验证中...";
             showMsg("", "");
 
             try {
-                // 调用后端接口
                 const res = await fetch('/api/verify', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ cdk_key: code })
                 });
-
+                
                 const data = await res.json();
 
                 if (data.success) {
-                    showMsg(data.message, '#4caf50'); // 绿色成功
-                    // 成功后的操作：比如跳转、清除输入框
+                    showMsg(data.message, '#4caf50'); 
                     input.value = "";
                     btn.innerText = "验证成功";
                     setTimeout(() => {
@@ -278,14 +258,14 @@
                         btn.innerText = "立即验证";
                     }, 3000);
                 } else {
-                    showMsg(data.message, '#ff4444'); // 红色失败
+                    showMsg(data.message, '#ff4444'); 
                     btn.disabled = false;
                     btn.innerText = "立即验证";
                 }
 
             } catch (error) {
                 console.error(error);
-                showMsg('网络错误，请稍后重试', '#ff4444');
+                showMsg('网络连接错误，请稍后重试', '#ff4444');
                 btn.disabled = false;
                 btn.innerText = "立即验证";
             }
@@ -297,5 +277,4 @@
         }
     </script>
 </body>
-
 </html>
