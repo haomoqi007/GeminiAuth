@@ -1,35 +1,69 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>七猴认证 - Gemini 资格验证</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
+        /* --- 1. CSS 变量定义 (主题系统) --- */
         :root {
+            /* 默认暗色主题 (Dark) */
             --bg-color: #0a0a0a;
+            --text-main: #ffffff;
+            --text-sub: #9aa0a6;
             --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --input-bg: rgba(0, 0, 0, 0.4);
+            --input-border: #333;
             --accent: #8ab4f8;
+            --accent-hover: #d2e3fc;
             --btn-grad: linear-gradient(135deg, #7b61ff 0%, #aa75ff 100%);
+            --header-bg: rgba(10, 10, 10, 0.8);
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
+
+        /* 亮色主题 (Light) */
+        [data-theme="light"] {
+            --bg-color: #f0f2f5;
+            --text-main: #1a1a1c;
+            --text-sub: #5f6368;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --card-border: rgba(0, 0, 0, 0.05);
+            --input-bg: #ffffff;
+            --input-border: #dadce0;
+            --accent: #1a73e8;
+            --accent-hover: #174ea6;
+            --btn-grad: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
+            --header-bg: rgba(240, 242, 245, 0.8);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
         body {
             margin: 0;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-color);
-            color: #fff;
-            height: 100vh;
+            color: var(--text-main);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        /* --- 页眉设计 --- */
+        /* --- 页眉 --- */
         header {
-            padding: 20px 40px;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 70px;
+            padding: 0 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 10;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--card-border);
         }
 
         .brand-container {
@@ -37,124 +71,170 @@
             align-items: center;
             gap: 12px;
             text-decoration: none;
-            cursor: pointer;
-            /* 初始状态隐藏，防止闪烁 */
-            opacity: 0; 
-            transition: opacity 0.3s ease; 
+            opacity: 0; /* 初始隐藏，等Logo加载 */
+            transition: opacity 0.3s;
         }
 
-        .logo-img {
-            height: 36px;
-            width: auto;
-            border-radius: 6px;
-            display: none; /* 默认不显示，直到JS获取到地址 */
-        }
-
+        .logo-img { height: 32px; width: auto; border-radius: 6px; display: none; }
         .brand-text {
-            font-weight: 800;
-            font-size: 1.3rem;
-            letter-spacing: -0.5px;
-            color: #fff;
-            background: linear-gradient(to right, #fff, #ccc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-weight: 800; font-size: 1.2rem;
+            color: var(--text-main);
         }
 
-        .lang { 
-            font-size: 0.9rem; 
-            color: #666; 
-            font-weight: 500;
+        /* 右上角工具栏 */
+        .tools { display: flex; gap: 20px; align-items: center; }
+        .tool-btn {
+            background: none; border: none;
             cursor: pointer;
+            font-size: 0.95rem; font-weight: 600;
+            color: var(--text-sub);
+            transition: color 0.2s;
+            padding: 5px;
         }
+        .tool-btn:hover { color: var(--text-main); }
         
-        /* --- 主体内容 --- */
+        /* --- 主体布局 (Grid) --- */
         main {
             flex: 1;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: center; /* 垂直居中 */
+            padding: 100px 20px 40px; /* 上方留出 header 空间 */
             position: relative;
-            padding: 20px;
         }
 
-        .glow {
-            position: absolute;
-            top: 50%; right: -10%;
-            transform: translateY(-50%);
-            width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(100,100,255,0.12), transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
-        
         .container {
-            display: flex;
-            max-width: 1000px;
             width: 100%;
-            gap: 80px;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
             z-index: 1;
-            align-items: center;
         }
-        
-        .left-text { flex: 1; }
-        h1 { 
-            font-size: 4.5rem; 
-            line-height: 1.1; 
-            margin: 0 0 24px 0; 
-            background: linear-gradient(to bottom right, #ffffff, #999999); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
+
+        /* 第一行：大标题区 */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .main-title {
+            font-size: 4rem;
+            line-height: 1.1;
+            margin: 0;
+            font-weight: 800;
             letter-spacing: -2px;
+            background: linear-gradient(135deg, var(--text-main) 30%, var(--text-sub) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .desc { color: #9aa0a6; line-height: 1.7; font-size: 1rem; }
-        .desc p { margin-bottom: 12px; }
-        .desc a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(138,180,248,0.3); }
+
+        /* 第二行：分栏区 (左文案 | 右卡片) */
+        .content-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 1:1 等分 */
+            gap: 60px;
+            align-items: start;
+        }
+
+        /* 左侧说明 */
+        .info-box {
+            padding-top: 20px;
+        }
+        .info-title {
+            font-size: 1.5rem; font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+        .desc {
+            color: var(--text-sub);
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+        .desc p { margin-bottom: 16px; }
+        .desc a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: 0.2s;
+        }
         .desc a:hover { border-bottom-color: var(--accent); opacity: 0.8; }
 
-        .right-card { flex: 0 0 400px; }
-        .auth-box {
+        /* 右侧卡片 */
+        .auth-card {
             background: var(--card-bg);
-            backdrop-filter: blur(24px);
-            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
             padding: 40px;
             border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: var(--shadow);
+            transition: background 0.3s, box-shadow 0.3s;
         }
-        .input-label { display: block; color: #9aa0a6; margin-bottom: 12px; font-size: 0.9rem; font-weight: 500; }
+
+        .input-group { margin-bottom: 24px; }
+        .input-label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text-sub);
+            font-size: 0.9rem; font-weight: 600;
+        }
         .input-field {
             width: 100%; box-sizing: border-box;
             padding: 16px;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid #333;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
             border-radius: 12px;
-            color: #fff;
+            color: var(--text-main);
             font-size: 1rem;
             outline: none;
             transition: 0.3s;
         }
-        .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.2); }
-        .btn {
-            width: 100%; margin-top: 24px;
+        .input-field:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.15);
+        }
+        
+        .submit-btn {
+            width: 100%;
             padding: 16px;
             border: none; border-radius: 12px;
             background: var(--btn-grad);
-            color: #fff; font-weight: 600; font-size: 1.05rem;
-            cursor: pointer; transition: 0.2s;
+            color: #fff;
+            font-weight: 600; font-size: 1.05rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(123,97,255,0.4); }
-        .btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(123, 97, 255, 0.3);
+        }
+        .submit-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
 
-        #msg { margin-top: 15px; text-align: center; font-size: 0.9rem; min-height: 20px; }
-        footer { text-align: center; padding: 20px; color: #444; font-size: 0.8rem; }
+        #msg { margin-top: 16px; text-align: center; font-size: 0.9rem; min-height: 20px; }
 
-        @media (max-width: 900px) {
-            header { padding: 15px 20px; }
-            .container { flex-direction: column; text-align: center; gap: 40px; }
-            .brand-container { justify-content: flex-start; }
-            h1 { font-size: 3rem; }
-            .right-card { flex: 1; width: 100%; max-width: 360px; }
-            .left-text { padding: 0 20px; }
-            .glow { top: 20%; right: 50%; transform: translateX(50%); width: 100%; opacity: 0.5; }
+        footer {
+            text-align: center; padding: 30px;
+            color: var(--text-sub); font-size: 0.85rem;
+        }
+
+        /* 背景光效 */
+        .glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw; height: 80vw;
+            background: radial-gradient(circle, rgba(123, 97, 255, 0.08), transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 手机适配 */
+        @media (max-width: 850px) {
+            header { padding: 0 20px; }
+            .content-section { grid-template-columns: 1fr; gap: 40px; }
+            .info-box { text-align: center; padding-top: 0; order: 2; /* 手机上文字在下 */ }
+            .auth-card { order: 1; /* 手机上卡片在上 */ }
+            .main-title { font-size: 3rem; }
         }
     </style>
 </head>
@@ -163,81 +243,181 @@
     <header>
         <a href="#" class="brand-container" id="brandContainer">
             <img src="" alt="Logo" class="logo-img" id="dynamicLogo">
-            <span class="brand-text">七猴认证</span>
+            <span class="brand-text" data-i18n="brand">七猴认证</span>
         </a>
-        <div class="lang">中文 / EN</div>
+        <div class="tools">
+            <button class="tool-btn" id="themeToggle">🌞</button>
+            <button class="tool-btn" id="langToggle">EN</button>
+        </div>
     </header>
 
     <main>
         <div class="glow"></div>
         <div class="container">
-            <div class="left-text">
-                <h1>Gemini<br>认证</h1>
-                <div class="desc">
-                    <p>请输入您获取到的密钥进行验证。</p>
-                    <p>验证通过后，密钥将自动失效，请勿重复提交。</p>
-                    <p>如遇问题，请尝试切换网络环境或使用无痕模式。</p>
-                    <p>访问 <a href="#">官网文档</a> 获取更多帮助。</p>
-                </div>
-            </div>
             
-            <div class="right-card">
-                <div class="auth-box">
-                    <label class="input-label">请输入认证密钥</label>
-                    <input type="text" class="input-field" id="code" placeholder="例如: GEMINI-TEST-001">
-                    <button class="btn" id="submitBtn">立即验证</button>
+            <div class="hero-section">
+                <h1 class="main-title" data-i18n="mainTitle">Gemini 认证</h1>
+            </div>
+
+            <div class="content-section">
+                
+                <div class="info-box">
+                    <div class="info-title" data-i18n="infoTitle">使用指南</div>
+                    <div class="desc">
+                        <p data-i18n="desc1">请输入您获取到的密钥进行验证。</p>
+                        <p data-i18n="desc2">验证通过后，密钥将自动失效，请勿重复提交。</p>
+                        <p data-i18n="desc3">如遇问题，请尝试切换网络环境或使用无痕模式。</p>
+                        <p><span data-i18n="helpText">需要帮助？访问</span> <a href="#" data-i18n="docsLink">官方文档</a></p>
+                    </div>
+                </div>
+
+                <div class="auth-card">
+                    <div class="input-group">
+                        <label class="input-label" data-i18n="inputLabel">请输入认证密钥</label>
+                        <input type="text" class="input-field" id="code" placeholder="例如: GEMINI-TEST-001">
+                    </div>
+                    <button class="submit-btn" id="submitBtn" data-i18n="btnVerify">立即验证</button>
                     <div id="msg"></div>
                 </div>
+
             </div>
         </div>
     </main>
 
-    <footer>© 2025 七猴认证 All Rights Reserved</footer>
+    <footer>
+        <span data-i18n="footer">© 2025 七猴认证 All Rights Reserved</span>
+    </footer>
 
     <script>
-        // --- 1. 动态加载 Logo 逻辑 ---
+        // --- 1. 国际化字典 (i18n) ---
+        const translations = {
+            zh: {
+                brand: "七猴认证",
+                mainTitle: "Gemini 认证",
+                infoTitle: "使用指南",
+                desc1: "请输入您获取到的密钥进行验证。",
+                desc2: "验证通过后，密钥将自动失效，请勿重复提交。",
+                desc3: "如遇问题，请尝试切换网络环境或使用无痕模式。",
+                helpText: "需要帮助？访问",
+                docsLink: "官方文档",
+                inputLabel: "请输入认证密钥",
+                inputPlaceholder: "例如: GEMINI-TEST-001",
+                btnVerify: "立即验证",
+                btnVerifying: "验证中...",
+                btnSuccess: "验证成功",
+                btnReset: "立即验证",
+                footer: "© 2025 七猴认证 All Rights Reserved",
+                msgEmpty: "请输入密钥",
+                msgNetErr: "网络连接错误，请稍后重试"
+            },
+            en: {
+                brand: "QiHou Auth",
+                mainTitle: "Gemini Auth",
+                infoTitle: "Instructions",
+                desc1: "Please enter your license key to verify.",
+                desc2: "The key will be invalid after use. Do not resubmit.",
+                desc3: "If failed, try switching network or use Incognito mode.",
+                helpText: "Need help? Visit",
+                docsLink: "Documentation",
+                inputLabel: "Enter License Key",
+                inputPlaceholder: "E.g., GEMINI-TEST-001",
+                btnVerify: "Verify Now",
+                btnVerifying: "Verifying...",
+                btnSuccess: "Success",
+                btnReset: "Verify Now",
+                footer: "© 2025 QiHou Auth All Rights Reserved",
+                msgEmpty: "Please enter a key",
+                msgNetErr: "Network error, please try again"
+            }
+        };
+
+        // 当前状态
+        let currentLang = localStorage.getItem('lang') || 'zh';
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        // --- 2. 初始化逻辑 ---
+        function init() {
+            // 应用保存的主题
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            updateThemeIcon();
+
+            // 应用保存的语言
+            updateLangUI();
+            
+            // 加载 Logo (保持你原有的逻辑)
+            loadConfig();
+        }
+
+        // --- 3. 主题切换 ---
+        const themeBtn = document.getElementById('themeToggle');
+        themeBtn.addEventListener('click', () => {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('theme', currentTheme);
+            updateThemeIcon();
+        });
+
+        function updateThemeIcon() {
+            themeBtn.innerText = currentTheme === 'dark' ? '🌞' : '🌙';
+        }
+
+        // --- 4. 语言切换 ---
+        const langBtn = document.getElementById('langToggle');
+        langBtn.addEventListener('click', () => {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            localStorage.setItem('lang', currentLang);
+            updateLangUI();
+        });
+
+        function updateLangUI() {
+            const t = translations[currentLang];
+            
+            // 更新按钮文字 (显示"对方"语言)
+            langBtn.innerText = currentLang === 'zh' ? 'EN' : '中';
+            
+            // 更新所有带 data-i18n 的文本
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.innerText = t[key];
+            });
+
+            // 特殊处理 input placeholder
+            document.getElementById('code').placeholder = t.inputPlaceholder;
+        }
+
+        // --- 5. Logo 加载 (复用你之前的逻辑) ---
         async function loadConfig() {
             try {
-                // 请求后端接口获取 Logo 地址
                 const res = await fetch('/api/config');
                 const data = await res.json();
-                
                 const logoImg = document.getElementById('dynamicLogo');
-                const brandContainer = document.getElementById('brandContainer');
-
                 if (data.logo_url) {
                     logoImg.src = data.logo_url;
-                    logoImg.style.display = 'block'; // 有图片才显示
+                    logoImg.style.display = 'block';
                 }
-                
-                // 显示整个 Logo 区域 (淡入效果)
-                brandContainer.style.opacity = '1';
-
+                document.getElementById('brandContainer').style.opacity = '1';
             } catch (error) {
-                console.error("加载配置失败:", error);
-                // 失败时也把文字显示出来，避免页面空白
+                console.error("Logo Load Error", error);
                 document.getElementById('brandContainer').style.opacity = '1';
             }
         }
 
-        // 页面加载时立即执行
-        loadConfig();
-
-
-        // --- 2. 验证卡密逻辑 (保持不变) ---
+        // --- 6. 验证逻辑 ---
         const btn = document.getElementById('submitBtn');
         const input = document.getElementById('code');
         const msg = document.getElementById('msg');
 
         btn.addEventListener('click', async () => {
+            const t = translations[currentLang]; // 获取当前语言包
             const code = input.value.trim();
+            
             if(!code) {
-                showMsg('请输入密钥', '#ff4444');
+                showMsg(t.msgEmpty, '#ff4444');
                 return;
             }
 
             btn.disabled = true;
-            btn.innerText = "验证中...";
+            btn.innerText = t.btnVerifying;
             showMsg("", "");
 
             try {
@@ -250,24 +430,24 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    showMsg(data.message, '#4caf50'); 
+                    showMsg(data.message, '#4caf50'); // 这里后端返回的消息如果也需要翻译，最好后端返回 code 前端匹配
                     input.value = "";
-                    btn.innerText = "验证成功";
+                    btn.innerText = t.btnSuccess;
                     setTimeout(() => {
                         btn.disabled = false;
-                        btn.innerText = "立即验证";
+                        btn.innerText = t.btnReset;
                     }, 3000);
                 } else {
-                    showMsg(data.message, '#ff4444'); 
+                    showMsg(data.message, '#ff4444');
                     btn.disabled = false;
-                    btn.innerText = "立即验证";
+                    btn.innerText = t.btnReset;
                 }
 
             } catch (error) {
                 console.error(error);
-                showMsg('网络连接错误，请稍后重试', '#ff4444');
+                showMsg(t.msgNetErr, '#ff4444');
                 btn.disabled = false;
-                btn.innerText = "立即验证";
+                btn.innerText = t.btnReset;
             }
         });
 
@@ -275,6 +455,9 @@
             msg.innerText = text;
             msg.style.color = color;
         }
+
+        // 启动！
+        init();
     </script>
 </body>
 </html>
