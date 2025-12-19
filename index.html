@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>七猴认证 - Gemini 资格验证</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* --- 1. CSS 变量定义 (主题系统) --- */
+        /* --- CSS 变量定义 --- */
         :root {
-            /* 默认暗色主题 (Dark) */
+            /* 默认暗色变量 (Dark) */
             --bg-color: #0a0a0a;
             --text-main: #ffffff;
             --text-sub: #9aa0a6;
@@ -23,7 +23,7 @@
             --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
-        /* 亮色主题 (Light) */
+        /* 亮色主题覆盖 (Light) */
         [data-theme="light"] {
             --bg-color: #f0f2f5;
             --text-main: #1a1a1c;
@@ -44,17 +44,19 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            min-height: 100vh;
+            
+            /* --- 核心修改：强制全屏无滚动条 --- */
+            height: 100vh; 
+            overflow: hidden; 
+            
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* --- 页眉 --- */
+        /* 页眉 */
         header {
-            position: fixed;
-            top: 0; left: 0; right: 0;
+            flex: 0 0 auto; /* 固定高度，不被压缩 */
             height: 70px;
             padding: 0 40px;
             display: flex;
@@ -71,7 +73,7 @@
             align-items: center;
             gap: 12px;
             text-decoration: none;
-            opacity: 0; /* 初始隐藏，等Logo加载 */
+            opacity: 0;
             transition: opacity 0.3s;
         }
 
@@ -81,7 +83,6 @@
             color: var(--text-main);
         }
 
-        /* 右上角工具栏 */
         .tools { display: flex; gap: 20px; align-items: center; }
         .tool-btn {
             background: none; border: none;
@@ -93,14 +94,14 @@
         }
         .tool-btn:hover { color: var(--text-main); }
         
-        /* --- 主体布局 (Grid) --- */
+        /* 主体内容 */
         main {
-            flex: 1;
+            flex: 1; /* 占满剩余空间 */
             display: flex;
             justify-content: center;
-            align-items: center; /* 垂直居中 */
-            padding: 100px 20px 40px; /* 上方留出 header 空间 */
+            align-items: center; /* 垂直完全居中 */
             position: relative;
+            width: 100%;
         }
 
         .container {
@@ -109,14 +110,11 @@
             display: flex;
             flex-direction: column;
             gap: 40px;
+            padding: 0 20px; /* 防止左右贴边 */
             z-index: 1;
         }
 
-        /* 第一行：大标题区 */
-        .hero-section {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+        .hero-section { text-align: center; margin-bottom: 20px; }
         .main-title {
             font-size: 4rem;
             line-height: 1.1;
@@ -128,38 +126,19 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* 第二行：分栏区 (左文案 | 右卡片) */
         .content-section {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* 1:1 等分 */
+            grid-template-columns: 1fr 1fr;
             gap: 60px;
             align-items: start;
         }
 
-        /* 左侧说明 */
-        .info-box {
-            padding-top: 20px;
-        }
-        .info-title {
-            font-size: 1.5rem; font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--text-main);
-        }
-        .desc {
-            color: var(--text-sub);
-            line-height: 1.8;
-            font-size: 1rem;
-        }
-        .desc p { margin-bottom: 16px; }
-        .desc a {
-            color: var(--accent);
-            text-decoration: none;
-            border-bottom: 1px solid transparent;
-            transition: 0.2s;
-        }
+        .info-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; color: var(--text-main); }
+        .desc { color: var(--text-sub); line-height: 1.8; font-size: 1rem; }
+        .desc p { margin-bottom: 12px; }
+        .desc a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: 0.2s; }
         .desc a:hover { border-bottom-color: var(--accent); opacity: 0.8; }
 
-        /* 右侧卡片 */
         .auth-card {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
@@ -172,12 +151,7 @@
         }
 
         .input-group { margin-bottom: 24px; }
-        .input-label {
-            display: block;
-            margin-bottom: 10px;
-            color: var(--text-sub);
-            font-size: 0.9rem; font-weight: 600;
-        }
+        .input-label { display: block; margin-bottom: 10px; color: var(--text-sub); font-size: 0.9rem; font-weight: 600; }
         .input-field {
             width: 100%; box-sizing: border-box;
             padding: 16px;
@@ -189,51 +163,45 @@
             outline: none;
             transition: 0.3s;
         }
-        .input-field:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.15);
-        }
+        .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.15); }
         
         .submit-btn {
-            width: 100%;
-            padding: 16px;
-            border: none; border-radius: 12px;
+            width: 100%; padding: 16px; border: none; border-radius: 12px;
             background: var(--btn-grad);
-            color: #fff;
-            font-weight: 600; font-size: 1.05rem;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            color: #fff; font-weight: 600; font-size: 1.05rem;
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
         }
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(123, 97, 255, 0.3);
-        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(123, 97, 255, 0.3); }
         .submit-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
 
         #msg { margin-top: 16px; text-align: center; font-size: 0.9rem; min-height: 20px; }
-
-        footer {
-            text-align: center; padding: 30px;
-            color: var(--text-sub); font-size: 0.85rem;
+        
+        footer { 
+            flex: 0 0 auto;
+            text-align: center; padding: 20px; 
+            color: var(--text-sub); font-size: 0.85rem; 
         }
-
-        /* 背景光效 */
+        
         .glow {
-            position: absolute;
-            top: 50%; left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             width: 80vw; height: 80vw;
             background: radial-gradient(circle, rgba(123, 97, 255, 0.08), transparent 60%);
-            pointer-events: none;
-            z-index: 0;
+            pointer-events: none; z-index: 0;
         }
 
-        /* 手机适配 */
+        /* --- 手机适配 (允许滚动) --- */
         @media (max-width: 850px) {
+            body {
+                height: auto; /* 手机上取消高度锁定 */
+                overflow: auto; /* 允许滚动 */
+                overflow-x: hidden; /* 防止横向溢出 */
+            }
+            main { padding: 40px 20px; } /* 增加手机上的内边距 */
             header { padding: 0 20px; }
             .content-section { grid-template-columns: 1fr; gap: 40px; }
-            .info-box { text-align: center; padding-top: 0; order: 2; /* 手机上文字在下 */ }
-            .auth-card { order: 1; /* 手机上卡片在上 */ }
+            .info-box { text-align: center; order: 2; }
+            .auth-card { order: 1; }
             .main-title { font-size: 3rem; }
         }
     </style>
@@ -254,13 +222,11 @@
     <main>
         <div class="glow"></div>
         <div class="container">
-            
             <div class="hero-section">
                 <h1 class="main-title" data-i18n="mainTitle">Gemini 认证</h1>
             </div>
 
             <div class="content-section">
-                
                 <div class="info-box">
                     <div class="info-title" data-i18n="infoTitle">使用指南</div>
                     <div class="desc">
@@ -279,7 +245,6 @@
                     <button class="submit-btn" id="submitBtn" data-i18n="btnVerify">立即验证</button>
                     <div id="msg"></div>
                 </div>
-
             </div>
         </div>
     </main>
@@ -331,37 +296,36 @@
             }
         };
 
-        // 当前状态
+        // --- 2. 状态管理 ---
         let currentLang = localStorage.getItem('lang') || 'zh';
-        let currentTheme = localStorage.getItem('theme') || 'dark';
 
-        // --- 2. 初始化逻辑 ---
+        function getSystemTheme() {
+            return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        let currentTheme = localStorage.getItem('theme') || getSystemTheme();
+
+        // --- 3. 初始化 ---
         function init() {
-            // 应用保存的主题
             document.documentElement.setAttribute('data-theme', currentTheme);
             updateThemeIcon();
-
-            // 应用保存的语言
             updateLangUI();
-            
-            // 加载 Logo (保持你原有的逻辑)
             loadConfig();
         }
 
-        // --- 3. 主题切换 ---
+        // --- 4. 主题切换 ---
         const themeBtn = document.getElementById('themeToggle');
         themeBtn.addEventListener('click', () => {
             currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', currentTheme);
-            localStorage.setItem('theme', currentTheme);
             updateThemeIcon();
+            localStorage.setItem('theme', currentTheme);
         });
 
         function updateThemeIcon() {
             themeBtn.innerText = currentTheme === 'dark' ? '🌞' : '🌙';
         }
 
-        // --- 4. 语言切换 ---
+        // --- 5. 语言切换 ---
         const langBtn = document.getElementById('langToggle');
         langBtn.addEventListener('click', () => {
             currentLang = currentLang === 'zh' ? 'en' : 'zh';
@@ -371,21 +335,15 @@
 
         function updateLangUI() {
             const t = translations[currentLang];
-            
-            // 更新按钮文字 (显示"对方"语言)
             langBtn.innerText = currentLang === 'zh' ? 'EN' : '中';
-            
-            // 更新所有带 data-i18n 的文本
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (t[key]) el.innerText = t[key];
             });
-
-            // 特殊处理 input placeholder
             document.getElementById('code').placeholder = t.inputPlaceholder;
         }
 
-        // --- 5. Logo 加载 (复用你之前的逻辑) ---
+        // --- 6. Logo 加载 ---
         async function loadConfig() {
             try {
                 const res = await fetch('/api/config');
@@ -402,13 +360,13 @@
             }
         }
 
-        // --- 6. 验证逻辑 ---
+        // --- 7. 验证逻辑 ---
         const btn = document.getElementById('submitBtn');
         const input = document.getElementById('code');
         const msg = document.getElementById('msg');
 
         btn.addEventListener('click', async () => {
-            const t = translations[currentLang]; // 获取当前语言包
+            const t = translations[currentLang];
             const code = input.value.trim();
             
             if(!code) {
@@ -430,7 +388,7 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    showMsg(data.message, '#4caf50'); // 这里后端返回的消息如果也需要翻译，最好后端返回 code 前端匹配
+                    showMsg(data.message, '#4caf50');
                     input.value = "";
                     btn.innerText = t.btnSuccess;
                     setTimeout(() => {
@@ -456,7 +414,6 @@
             msg.style.color = color;
         }
 
-        // 启动！
         init();
     </script>
 </body>
