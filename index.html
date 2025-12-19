@@ -44,94 +44,40 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            
-            /* --- 核心修改：强制全屏无滚动条 --- */
-            height: 100vh; 
-            overflow: hidden; 
-            
+            height: 100vh; overflow: hidden; /* 保持全屏无滚动条 */
             display: flex;
             flex-direction: column;
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* 页眉 */
         header {
-            flex: 0 0 auto; /* 固定高度，不被压缩 */
-            height: 70px;
-            padding: 0 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            backdrop-filter: blur(10px);
-            background-color: var(--header-bg);
-            border-bottom: 1px solid var(--card-border);
+            flex: 0 0 auto;
+            height: 70px; padding: 0 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100; backdrop-filter: blur(10px);
+            background-color: var(--header-bg); border-bottom: 1px solid var(--card-border);
         }
 
-        .brand-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
+        .brand-container { display: flex; align-items: center; gap: 12px; text-decoration: none; opacity: 0; transition: opacity 0.3s; }
         .logo-img { height: 32px; width: auto; border-radius: 6px; display: none; }
-        .brand-text {
-            font-weight: 800; font-size: 1.2rem;
-            color: var(--text-main);
-        }
+        .brand-text { font-weight: 800; font-size: 1.2rem; color: var(--text-main); }
 
         .tools { display: flex; gap: 20px; align-items: center; }
-        .tool-btn {
-            background: none; border: none;
-            cursor: pointer;
-            font-size: 0.95rem; font-weight: 600;
-            color: var(--text-sub);
-            transition: color 0.2s;
-            padding: 5px;
-        }
+        .tool-btn { background: none; border: none; cursor: pointer; font-size: 0.95rem; font-weight: 600; color: var(--text-sub); transition: color 0.2s; padding: 5px; }
         .tool-btn:hover { color: var(--text-main); }
         
-        /* 主体内容 */
-        main {
-            flex: 1; /* 占满剩余空间 */
-            display: flex;
-            justify-content: center;
-            align-items: center; /* 垂直完全居中 */
-            position: relative;
-            width: 100%;
-        }
+        main { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; width: 100%; }
 
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-            padding: 0 20px; /* 防止左右贴边 */
-            z-index: 1;
-        }
+        .container { width: 100%; max-width: 1000px; display: flex; flex-direction: column; gap: 40px; padding: 0 20px; z-index: 1; }
 
         .hero-section { text-align: center; margin-bottom: 20px; }
         .main-title {
-            font-size: 4rem;
-            line-height: 1.1;
-            margin: 0;
-            font-weight: 800;
-            letter-spacing: -2px;
+            font-size: 4rem; line-height: 1.1; margin: 0; font-weight: 800; letter-spacing: -2px;
             background: linear-gradient(135deg, var(--text-main) 30%, var(--text-sub) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        .content-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: start;
-        }
+        .content-section { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
 
         .info-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; color: var(--text-main); }
         .desc { color: var(--text-sub); line-height: 1.8; font-size: 1rem; }
@@ -140,74 +86,48 @@
         .desc a:hover { border-bottom-color: var(--accent); opacity: 0.8; }
 
         .auth-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: var(--shadow);
-            transition: background 0.3s, box-shadow 0.3s;
+            background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border); padding: 40px; border-radius: 24px;
+            box-shadow: var(--shadow); transition: background 0.3s, box-shadow 0.3s;
         }
 
         .input-group { margin-bottom: 24px; }
         .input-label { display: block; margin-bottom: 10px; color: var(--text-sub); font-size: 0.9rem; font-weight: 600; }
         .input-field {
-            width: 100%; box-sizing: border-box;
-            padding: 16px;
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: 12px;
-            color: var(--text-main);
-            font-size: 1rem;
-            outline: none;
-            transition: 0.3s;
+            width: 100%; box-sizing: border-box; padding: 16px;
+            background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 12px;
+            color: var(--text-main); font-size: 1rem; outline: none; transition: 0.3s;
         }
         .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.15); }
         
         .submit-btn {
             width: 100%; padding: 16px; border: none; border-radius: 12px;
-            background: var(--btn-grad);
-            color: #fff; font-weight: 600; font-size: 1.05rem;
+            background: var(--btn-grad); color: #fff; font-weight: 600; font-size: 1.05rem;
             cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
         }
         .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(123, 97, 255, 0.3); }
         .submit-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
 
-        #msg { margin-top: 16px; text-align: center; font-size: 0.9rem; min-height: 20px; }
+        #msg { margin-top: 16px; text-align: center; font-size: 0.9rem; min-height: 20px; white-space: pre-wrap; }
         
-        footer { 
-            flex: 0 0 auto;
-            text-align: center; padding: 20px; 
-            color: var(--text-sub); font-size: 0.85rem; 
-        }
+        footer { flex: 0 0 auto; text-align: center; padding: 20px; color: var(--text-sub); font-size: 0.85rem; }
         
         .glow {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80vw; height: 80vw;
-            background: radial-gradient(circle, rgba(123, 97, 255, 0.08), transparent 60%);
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 80vw; height: 80vw; background: radial-gradient(circle, rgba(123, 97, 255, 0.08), transparent 60%);
             pointer-events: none; z-index: 0;
         }
 
-        /* --- 手机适配 (允许滚动) --- */
         @media (max-width: 850px) {
-            body {
-                height: auto; /* 手机上取消高度锁定 */
-                overflow: auto; /* 允许滚动 */
-                overflow-x: hidden; /* 防止横向溢出 */
-            }
-            main { padding: 40px 20px; } /* 增加手机上的内边距 */
-            header { padding: 0 20px; }
+            body { height: auto; overflow: auto; overflow-x: hidden; }
+            main { padding: 40px 20px; } header { padding: 0 20px; }
             .content-section { grid-template-columns: 1fr; gap: 40px; }
-            .info-box { text-align: center; order: 2; }
-            .auth-card { order: 1; }
+            .info-box { text-align: center; order: 2; } .auth-card { order: 1; }
             .main-title { font-size: 3rem; }
         }
     </style>
 </head>
 <body>
-
     <header>
         <a href="#" class="brand-container" id="brandContainer">
             <img src="" alt="Logo" class="logo-img" id="dynamicLogo">
@@ -225,7 +145,6 @@
             <div class="hero-section">
                 <h1 class="main-title" data-i18n="mainTitle">Gemini 认证</h1>
             </div>
-
             <div class="content-section">
                 <div class="info-box">
                     <div class="info-title" data-i18n="infoTitle">使用指南</div>
@@ -236,7 +155,6 @@
                         <p><span data-i18n="helpText">需要帮助？访问</span> <a href="#" data-i18n="docsLink">官方文档</a></p>
                     </div>
                 </div>
-
                 <div class="auth-card">
                     <div class="input-group">
                         <label class="input-label" data-i18n="inputLabel">请输入认证密钥</label>
@@ -248,89 +166,71 @@
             </div>
         </div>
     </main>
-
-    <footer>
-        <span data-i18n="footer">© 2025 七猴认证 All Rights Reserved</span>
-    </footer>
+    <footer><span data-i18n="footer">© 2025 七猴认证 All Rights Reserved</span></footer>
 
     <script>
-        // --- 1. 国际化字典 (i18n) ---
+        // --- 1. 国际化字典 (新增了 error 消息) ---
         const translations = {
             zh: {
-                brand: "七猴认证",
-                mainTitle: "Gemini 认证",
-                infoTitle: "使用指南",
+                brand: "七猴认证", mainTitle: "Gemini 认证", infoTitle: "使用指南",
                 desc1: "请输入您获取到的密钥进行验证。",
                 desc2: "验证通过后，密钥将自动失效，请勿重复提交。",
                 desc3: "如遇问题，请尝试切换网络环境或使用无痕模式。",
-                helpText: "需要帮助？访问",
-                docsLink: "官方文档",
-                inputLabel: "请输入认证密钥",
-                inputPlaceholder: "例如: GEMINI-TEST-001",
-                btnVerify: "立即验证",
-                btnVerifying: "验证中...",
-                btnSuccess: "验证成功",
-                btnReset: "立即验证",
+                helpText: "需要帮助？访问", docsLink: "官方文档",
+                inputLabel: "请输入认证密钥", inputPlaceholder: "例如: GEMINI-TEST-001",
+                btnVerify: "立即验证", btnVerifying: "验证中...", btnSuccess: "验证成功", btnReset: "立即验证",
                 footer: "© 2025 七猴认证 All Rights Reserved",
-                msgEmpty: "请输入密钥",
-                msgNetErr: "网络连接错误，请稍后重试"
+                // 新增错误提示翻译
+                errEmpty: "请输入密钥",
+                errNotFound: "认证失败：卡密不存在，请检查输入",
+                errUsed: "认证失败：此卡密已于 {time} 被使用",
+                errForbidden: "认证失败：此卡密已被禁用",
+                errServer: "服务器内部错误，请稍后重试",
+                msgSuccess: "认证成功！权益已激活。"
             },
             en: {
-                brand: "QiHou Auth",
-                mainTitle: "Gemini Auth",
-                infoTitle: "Instructions",
+                brand: "QiHou Auth", mainTitle: "Gemini Auth", infoTitle: "Instructions",
                 desc1: "Please enter your license key to verify.",
                 desc2: "The key will be invalid after use. Do not resubmit.",
                 desc3: "If failed, try switching network or use Incognito mode.",
-                helpText: "Need help? Visit",
-                docsLink: "Documentation",
-                inputLabel: "Enter License Key",
-                inputPlaceholder: "E.g., GEMINI-TEST-001",
-                btnVerify: "Verify Now",
-                btnVerifying: "Verifying...",
-                btnSuccess: "Success",
-                btnReset: "Verify Now",
+                helpText: "Need help? Visit", docsLink: "Documentation",
+                inputLabel: "Enter License Key", inputPlaceholder: "E.g., GEMINI-TEST-001",
+                btnVerify: "Verify Now", btnVerifying: "Verifying...", btnSuccess: "Success", btnReset: "Verify Now",
                 footer: "© 2025 QiHou Auth All Rights Reserved",
-                msgEmpty: "Please enter a key",
-                msgNetErr: "Network error, please try again"
+                // 新增错误提示翻译
+                errEmpty: "Please enter a key",
+                errNotFound: "Invalid key: Key does not exist.",
+                errUsed: "Invalid key: Used at {time}",
+                errForbidden: "Invalid key: This key is forbidden.",
+                errServer: "Server error, please try again later.",
+                msgSuccess: "Verification Successful! Access Granted."
             }
         };
 
-        // --- 2. 状态管理 ---
         let currentLang = localStorage.getItem('lang') || 'zh';
-
-        function getSystemTheme() {
-            return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-        }
+        function getSystemTheme() { return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; }
         let currentTheme = localStorage.getItem('theme') || getSystemTheme();
 
-        // --- 3. 初始化 ---
         function init() {
             document.documentElement.setAttribute('data-theme', currentTheme);
-            updateThemeIcon();
-            updateLangUI();
-            loadConfig();
+            updateThemeIcon(); updateLangUI(); loadConfig();
         }
 
-        // --- 4. 主题切换 ---
         const themeBtn = document.getElementById('themeToggle');
         themeBtn.addEventListener('click', () => {
             currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', currentTheme);
-            updateThemeIcon();
-            localStorage.setItem('theme', currentTheme);
+            updateThemeIcon(); localStorage.setItem('theme', currentTheme);
         });
+        function updateThemeIcon() { themeBtn.innerText = currentTheme === 'dark' ? '🌞' : '🌙'; }
 
-        function updateThemeIcon() {
-            themeBtn.innerText = currentTheme === 'dark' ? '🌞' : '🌙';
-        }
-
-        // --- 5. 语言切换 ---
         const langBtn = document.getElementById('langToggle');
         langBtn.addEventListener('click', () => {
             currentLang = currentLang === 'zh' ? 'en' : 'zh';
             localStorage.setItem('lang', currentLang);
             updateLangUI();
+            // 切换语言时，如果当前有错误信息，清空它，避免残留另一种语言的信息
+            document.getElementById('msg').innerText = ""; 
         });
 
         function updateLangUI() {
@@ -343,24 +243,17 @@
             document.getElementById('code').placeholder = t.inputPlaceholder;
         }
 
-        // --- 6. Logo 加载 ---
         async function loadConfig() {
             try {
                 const res = await fetch('/api/config');
                 const data = await res.json();
                 const logoImg = document.getElementById('dynamicLogo');
-                if (data.logo_url) {
-                    logoImg.src = data.logo_url;
-                    logoImg.style.display = 'block';
-                }
+                if (data.logo_url) { logoImg.src = data.logo_url; logoImg.style.display = 'block'; }
                 document.getElementById('brandContainer').style.opacity = '1';
-            } catch (error) {
-                console.error("Logo Load Error", error);
-                document.getElementById('brandContainer').style.opacity = '1';
-            }
+            } catch (error) { console.error("Logo Error", error); document.getElementById('brandContainer').style.opacity = '1'; }
         }
 
-        // --- 7. 验证逻辑 ---
+        // --- 验证逻辑核心修改 ---
         const btn = document.getElementById('submitBtn');
         const input = document.getElementById('code');
         const msg = document.getElementById('msg');
@@ -370,7 +263,7 @@
             const code = input.value.trim();
             
             if(!code) {
-                showMsg(t.msgEmpty, '#ff4444');
+                showMsg(t.errEmpty, '#ff4444');
                 return;
             }
 
@@ -387,23 +280,32 @@
                 
                 const data = await res.json();
 
+                // 根据后端返回的 code 选择语言包里的文字
                 if (data.success) {
-                    showMsg(data.message, '#4caf50');
+                    showMsg(t.msgSuccess, '#4caf50');
                     input.value = "";
                     btn.innerText = t.btnSuccess;
-                    setTimeout(() => {
-                        btn.disabled = false;
-                        btn.innerText = t.btnReset;
-                    }, 3000);
+                    setTimeout(() => { btn.disabled = false; btn.innerText = t.btnReset; }, 3000);
                 } else {
-                    showMsg(data.message, '#ff4444');
+                    let errorText = t.errServer; // 默认错误
+                    
+                    if (data.code === 'NOT_FOUND') errorText = t.errNotFound;
+                    else if (data.code === 'USED') {
+                        // 格式化时间，自动适应本地时区
+                        const timeStr = data.used_at ? new Date(data.used_at).toLocaleString() : 'Unknown';
+                        errorText = t.errUsed.replace('{time}', timeStr);
+                    }
+                    else if (data.code === 'FORBIDDEN') errorText = t.errForbidden;
+                    else if (data.code === 'EMPTY_INPUT') errorText = t.errEmpty;
+
+                    showMsg(errorText, '#ff4444');
                     btn.disabled = false;
                     btn.innerText = t.btnReset;
                 }
 
             } catch (error) {
                 console.error(error);
-                showMsg(t.msgNetErr, '#ff4444');
+                showMsg(t.errServer, '#ff4444');
                 btn.disabled = false;
                 btn.innerText = t.btnReset;
             }
